@@ -1,0 +1,27 @@
+retail_lakehouse:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: service-account
+      project: <gcp-project-id>
+      dataset: <dev-dataset>
+      keyfile: <path-to-sa-dbt-bigquery-key.json>
+      threads: 4
+      location: <region>
+    prod:
+      type: bigquery
+      method: service-account
+      project: <gcp-project-id>
+      dataset: <prod-dataset>
+      keyfile: <path-to-sa-dbt-bigquery-key.json>
+      threads: 8
+      location: <region>
+    ci:
+      type: bigquery
+      method: service-account
+      project: <gcp-project-id>
+      dataset: <ci-dataset>
+      keyfile: <path-to-sa-dbt-bigquery-key.json>
+      threads: 4
+      location: <region>
