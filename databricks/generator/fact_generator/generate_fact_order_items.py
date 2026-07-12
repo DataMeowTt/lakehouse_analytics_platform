@@ -1,9 +1,7 @@
-import os
-import sys
 import uuid
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from config.scale_tiers import N_PRODUCTS, N_SELLERS
+N_PRODUCTS = 50_000
+N_SELLERS = 5_000
 
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
@@ -52,6 +50,6 @@ fact_order_items = (
     .drop("product_idx", "seller_idx", "product_category_name", "avg_price", "stddev_price")
 )
 
-fact_order_items.write.format("delta").mode("overwrite").saveAsTable(
-    "retail_lakehouse.bronze.fact_order_items"
-)
+fact_order_items.write.format("delta").mode("overwrite").option(
+    "path", "gs://lakehouse-analytics-raw-bronze/bronze/fact_order_items"
+).saveAsTable("retail_lakehouse.bronze.fact_order_items")

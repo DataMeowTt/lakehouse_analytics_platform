@@ -39,6 +39,6 @@ fact_reviews = (
     .withColumn("_generator_run_id", F.lit(GENERATOR_RUN_ID))
 )
 
-fact_reviews.write.format("delta").mode("overwrite").saveAsTable(
-    "retail_lakehouse.bronze.fact_reviews"
-)
+fact_reviews.write.format("delta").mode("overwrite").option(
+    "path", "gs://lakehouse-analytics-raw-bronze/bronze/fact_reviews"
+).saveAsTable("retail_lakehouse.bronze.fact_reviews")

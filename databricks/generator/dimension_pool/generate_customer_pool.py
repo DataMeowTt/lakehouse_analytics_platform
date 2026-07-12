@@ -1,8 +1,4 @@
-import os
-import sys
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from config.scale_tiers import N_CUSTOMERS
+N_CUSTOMERS = 500_000
 
 import pandas as pd
 from faker import Faker
@@ -37,10 +33,10 @@ def generate_batch(pdf_iter):
         )
 
 
-dim_customer_pool = spark.range(N_CUSTOMERS, numPartitions=200).mapInPandas(
+dim_customer_pool = spark.range(N_CUSTOMERS, numPartitions=8).mapInPandas(
     generate_batch, schema=SCHEMA
 )
 
-dim_customer_pool.write.format("delta").mode("overwrite").saveAsTable(
-    "retail_lakehouse.bronze.dim_customer_pool"
-)
+dim_customer_pool.write.format("delta").mode("overwrite").option(
+    "path", "gs://lakehouse-analytics-raw-bronze/bronze/dim_customer_pool"
+).saveAsTable("retail_lakehouse.bronze.dim_customer_pool")

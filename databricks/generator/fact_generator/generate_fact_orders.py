@@ -1,9 +1,7 @@
-import os
-import sys
 import uuid
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from config.scale_tiers import N_CUSTOMERS, N_ORDERS
+N_ORDERS = 10_000_000
+N_CUSTOMERS = 500_000
 
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
@@ -69,5 +67,6 @@ fact_orders = orders_df.join(
     fact_orders.write.format("delta")
     .partitionBy("order_purchase_date")
     .mode("overwrite")
+    .option("path", "gs://lakehouse-analytics-raw-bronze/bronze/fact_orders")
     .saveAsTable("retail_lakehouse.bronze.fact_orders")
 )

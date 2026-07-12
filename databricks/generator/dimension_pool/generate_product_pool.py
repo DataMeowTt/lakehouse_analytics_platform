@@ -1,8 +1,4 @@
-import os
-import sys
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from config.scale_tiers import N_PRODUCTS
+N_PRODUCTS = 50_000
 
 import numpy as np
 import pandas as pd
@@ -49,10 +45,10 @@ def generate_batch(pdf_iter):
         )
 
 
-dim_product_pool = spark.range(N_PRODUCTS, numPartitions=50).mapInPandas(
+dim_product_pool = spark.range(N_PRODUCTS, numPartitions=4).mapInPandas(
     generate_batch, schema=SCHEMA
 )
 
-dim_product_pool.write.format("delta").mode("overwrite").saveAsTable(
-    "retail_lakehouse.bronze.dim_product_pool"
-)
+dim_product_pool.write.format("delta").mode("overwrite").option(
+    "path", "gs://lakehouse-analytics-raw-bronze/bronze/dim_product_pool"
+).saveAsTable("retail_lakehouse.bronze.dim_product_pool")

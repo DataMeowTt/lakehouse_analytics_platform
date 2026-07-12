@@ -44,6 +44,6 @@ fact_payments = (
     .withColumn("_generator_run_id", F.lit(GENERATOR_RUN_ID))
 )
 
-fact_payments.write.format("delta").mode("overwrite").saveAsTable(
-    "retail_lakehouse.bronze.fact_payments"
-)
+fact_payments.write.format("delta").mode("overwrite").option(
+    "path", "gs://lakehouse-analytics-raw-bronze/bronze/fact_payments"
+).saveAsTable("retail_lakehouse.bronze.fact_payments")
