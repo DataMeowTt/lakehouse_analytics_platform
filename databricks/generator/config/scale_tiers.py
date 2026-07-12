@@ -1,0 +1,5 @@
+# Tier Dev — documentation.md § III.2
+N_ORDERS = 10_000_000
+N_CUSTOMERS = 500_000
+N_PRODUCTS = 50_000
+N_SELLERS = 5_000

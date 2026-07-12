@@ -82,6 +82,7 @@ logs/
 
 documentation.md
 step-to-step.md
+CLAUDE.md
 
 # =============================================================================
 # dbt (retail_lakehouse)
