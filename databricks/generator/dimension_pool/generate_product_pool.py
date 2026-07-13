@@ -18,9 +18,6 @@ category_counts = (
 CATEGORIES = category_counts["product_category_name"].tolist()
 PROBS = (category_counts["count"] / category_counts["count"].sum()).tolist()
 
-categories_bc = spark.sparkContext.broadcast(CATEGORIES)
-probs_bc = spark.sparkContext.broadcast(PROBS)
-
 SCHEMA = StructType(
     [
         StructField("product_idx", LongType()),
@@ -32,8 +29,8 @@ SCHEMA = StructType(
 
 def generate_batch(pdf_iter):
     fake = Faker()
-    cats = categories_bc.value
-    probs = probs_bc.value
+    cats = CATEGORIES
+    probs = PROBS
     for pdf in pdf_iter:
         n = len(pdf)
         yield pd.DataFrame(

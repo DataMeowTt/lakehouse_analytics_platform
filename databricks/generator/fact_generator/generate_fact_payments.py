@@ -4,6 +4,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
 
 spark = SparkSession.builder.getOrCreate()
+spark.conf.set("spark.sql.shuffle.partitions", "8")
 
 GENERATOR_RUN_ID = str(uuid.uuid4())
 LOOKUP_PATH = "gs://lakehouse-analytics-raw-bronze/lookup"

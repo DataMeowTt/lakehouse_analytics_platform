@@ -3,6 +3,7 @@ from pyspark.sql import SparkSession
 spark = SparkSession.builder.getOrCreate()
 
 SEED_PATH = "gs://lakehouse-analytics-raw-bronze/seed"
+BRONZE_PATH = "gs://lakehouse-analytics-raw-bronze/bronze"
 CATALOG = "retail_lakehouse"
 SCHEMA = "bronze"
 
@@ -25,4 +26,6 @@ for table_name, file_name in SEED_FILES.items():
         .option("inferSchema", "true")
         .csv(f"{SEED_PATH}/{file_name}")
     )
-    df.write.format("delta").mode("overwrite").saveAsTable(f"{CATALOG}.{SCHEMA}.{table_name}")
+    df.write.format("delta").mode("overwrite").option(
+        "path", f"{BRONZE_PATH}/{table_name}"
+    ).saveAsTable(f"{CATALOG}.{SCHEMA}.{table_name}")

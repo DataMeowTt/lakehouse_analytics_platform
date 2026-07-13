@@ -32,12 +32,16 @@ seller_pool = spark.table("retail_lakehouse.bronze.dim_seller_pool")
 
 items = (
     items.join(
-        product_pool.select("product_idx", "product_id", "product_category_name"),
+        F.broadcast(product_pool.select("product_idx", "product_id", "product_category_name")),
         on="product_idx",
         how="left",
     )
-    .join(seller_pool.select("seller_idx", "seller_id"), on="seller_idx", how="left")
-    .join(category_price_stats, on="product_category_name", how="left")
+    .join(
+        F.broadcast(seller_pool.select("seller_idx", "seller_id")),
+        on="seller_idx",
+        how="left",
+    )
+    .join(F.broadcast(category_price_stats), on="product_category_name", how="left")
 )
 
 fact_order_items = (
