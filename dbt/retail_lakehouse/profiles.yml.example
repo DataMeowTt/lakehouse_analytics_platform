@@ -4,7 +4,7 @@ retail_lakehouse:
     dev:
       type: bigquery
       method: service-account
-      project: <gcp-project-id>
+      project: lakehouse-analytics
       dataset: <dev-dataset>
       keyfile: <path-to-sa-dbt-bigquery-key.json>
       threads: 4
@@ -12,7 +12,7 @@ retail_lakehouse:
     prod:
       type: bigquery
       method: service-account
-      project: <gcp-project-id>
+      project: lakehouse-analytics
       dataset: <prod-dataset>
       keyfile: <path-to-sa-dbt-bigquery-key.json>
       threads: 8
@@ -20,7 +20,7 @@ retail_lakehouse:
     ci:
       type: bigquery
       method: service-account
-      project: <gcp-project-id>
+      project: lakehouse-analytics
       dataset: <ci-dataset>
       keyfile: <path-to-sa-dbt-bigquery-key.json>
       threads: 4
