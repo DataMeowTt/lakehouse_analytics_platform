@@ -3,5 +3,6 @@ jupyter
 ipykernel
 matplotlib
 neo4j
+python-dotenv
 dbt-core
 dbt-bigquery
