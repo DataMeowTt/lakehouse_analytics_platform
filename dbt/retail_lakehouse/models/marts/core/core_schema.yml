@@ -1,3 +1,165 @@
 version: 2
 
-models: []
+models:
+  - name: dim_customer
+    description: "Dimension khách hàng, theo customer_unique_id (định danh người thật, không phải customer_id theo đơn)."
+    columns:
+      - name: customer_unique_id
+        description: "Định danh khách hàng thật, khóa chính."
+        data_tests:
+          - unique
+          - not_null
+      - name: customer_zip_code_prefix
+        description: "Mã bưu chính (rút gọn)."
+      - name: customer_city
+        description: "Thành phố khách hàng."
+      - name: customer_state
+        description: "Bang (state) khách hàng."
+
+  - name: dim_product
+    description: "Dimension sản phẩm."
+    columns:
+      - name: product_id
+        description: "Định danh sản phẩm, khóa chính."
+        data_tests:
+          - unique
+          - not_null
+      - name: product_category_name
+        description: "Tên category tiếng Bồ Đào Nha."
+      - name: product_category_name_english
+        description: "Tên category tiếng Anh."
+
+  - name: dim_seller
+    description: "Dimension người bán."
+    columns:
+      - name: seller_id
+        description: "Định danh người bán, khóa chính."
+        data_tests:
+          - unique
+          - not_null
+      - name: seller_zip_code_prefix
+        description: "Mã bưu chính (rút gọn)."
+      - name: seller_city
+        description: "Thành phố seller."
+      - name: seller_state
+        description: "Bang (state) seller."
+
+  - name: dim_date
+    description: "Date spine — 1 dòng/ngày, phủ toàn bộ khoảng 2019-01-01 đến 2027-01-01 (khớp range order_purchase_timestamp của generator)."
+    columns:
+      - name: date_day
+        description: "Ngày, khóa chính."
+        data_tests:
+          - unique
+          - not_null
+      - name: year
+        description: "Năm."
+      - name: quarter
+        description: "Quý (1-4)."
+      - name: month
+        description: "Tháng (1-12)."
+      - name: month_name
+        description: "Tên tháng đầy đủ (January, February...)."
+      - name: day
+        description: "Ngày trong tháng (1-31)."
+      - name: day_of_week
+        description: "Thứ trong tuần (1=Chủ nhật theo chuẩn BigQuery DAYOFWEEK)."
+      - name: day_name
+        description: "Tên thứ đầy đủ (Sunday, Monday...)."
+      - name: is_weekend
+        description: "TRUE nếu là thứ Bảy/Chủ nhật."
+
+  - name: fact_orders
+    description: "Fact bảng lõi — 1 dòng/order, đã join sẵn full order value (item total, payment total)."
+    columns:
+      - name: order_id
+        description: "Định danh đơn hàng, khóa chính."
+        data_tests:
+          - unique
+          - not_null
+      - name: customer_unique_id
+        description: "FK tới dim_customer."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_customer')
+                field: customer_unique_id
+      - name: order_status
+        description: "Trạng thái đơn hàng."
+        data_tests:
+          - accepted_values:
+              arguments:
+                values:
+                  [
+                    'delivered', 'shipped', 'canceled', 'unavailable',
+                    'invoiced', 'processing', 'created', 'approved',
+                  ]
+      - name: order_purchase_timestamp
+        description: "Thời điểm đặt hàng."
+      - name: order_purchase_date
+        description: "Ngày đặt hàng — FK tới dim_date."
+      - name: order_approved_at
+        description: "Thời điểm duyệt thanh toán. Null hợp lệ nếu status = created."
+      - name: order_delivered_carrier_date
+        description: "Thời điểm giao carrier. Null hợp lệ nếu chưa tới bước này."
+      - name: order_delivered_customer_date
+        description: "Thời điểm khách nhận hàng. Null hợp lệ nếu status khác delivered."
+      - name: order_estimated_delivery_date
+        description: "Ngày giao dự kiến."
+      - name: item_count
+        description: "Số dòng item trong đơn."
+      - name: item_total_value
+        description: "Tổng giá trị sản phẩm trong đơn."
+      - name: payment_total_value
+        description: "Tổng số tiền đã thanh toán cho đơn — dùng làm GMV/Monetary."
+
+  - name: fact_payments
+    description: "Fact thanh toán — 1 dòng/order (đơn giản hoá, không mô phỏng trường hợp 1 đơn trả nhiều lần)."
+    columns:
+      - name: order_id
+        description: "FK tới fact_orders."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('fact_orders')
+                field: order_id
+      - name: payment_sequential
+        description: "Thứ tự phương thức thanh toán (luôn = 1 trong dataset hiện tại)."
+      - name: payment_type
+        description: "Phương thức thanh toán."
+      - name: payment_installments
+        description: "Số kỳ trả góp."
+      - name: payment_value
+        description: "Số tiền thanh toán."
+      - name: _generated_at
+        description: "Cột kỹ thuật — thời điểm generator sinh dòng dữ liệu."
+      - name: _generator_run_id
+        description: "Cột kỹ thuật — ID lần chạy generator."
+
+  - name: fact_returns
+    description: "Fact đơn bị trả/huỷ. LƯU Ý: dataset không có dữ liệu return thật — dùng order_status = 'canceled' làm proxy gần đúng nhất."
+    columns:
+      - name: order_id
+        description: "FK tới fact_orders."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('fact_orders')
+                field: order_id
+      - name: customer_unique_id
+        description: "FK tới dim_customer."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_customer')
+                field: customer_unique_id
+      - name: order_purchase_timestamp
+        description: "Thời điểm đặt hàng."
+      - name: order_purchase_date
+        description: "Ngày đặt hàng."
+      - name: returned_amount
+        description: "Giá trị đơn bị huỷ/trả (= payment_total_value của đơn đó)."

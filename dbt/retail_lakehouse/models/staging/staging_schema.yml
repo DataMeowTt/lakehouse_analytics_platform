@@ -1,3 +1,119 @@
 version: 2
 
-models: []
+models:
+  - name: stg_orders
+    description: "Staging layer cho orders — rename/cast từ source staging_raw.orders, không business logic."
+    columns:
+      - name: order_id
+        description: "Định danh đơn hàng, khóa chính."
+        data_tests:
+          - unique
+          - not_null
+      - name: customer_unique_id
+        description: "Định danh khách hàng thật (không phải customer_id theo đơn — dataset synthetic không có khái niệm customer_id riêng)."
+      - name: order_status
+        description: "Trạng thái đơn hàng: delivered/shipped/canceled/unavailable/invoiced/processing/created/approved."
+      - name: order_purchase_timestamp
+        description: "Thời điểm khách đặt hàng."
+      - name: order_purchase_date
+        description: "Ngày đặt hàng, derive từ order_purchase_timestamp."
+      - name: order_approved_at
+        description: "Thời điểm đơn được duyệt thanh toán. Null hợp lệ khi order_status = created."
+      - name: order_delivered_carrier_date
+        description: "Thời điểm giao cho đơn vị vận chuyển. Null hợp lệ nếu đơn chưa tới bước giao carrier."
+      - name: order_delivered_customer_date
+        description: "Thời điểm khách nhận hàng. Null hợp lệ nếu order_status khác delivered."
+      - name: order_estimated_delivery_date
+        description: "Ngày giao dự kiến, luôn có giá trị (ước tính tại thời điểm đặt hàng)."
+      - name: _generated_at
+        description: "Cột kỹ thuật — thời điểm generator sinh dòng dữ liệu này (không phải business timestamp)."
+      - name: _generator_run_id
+        description: "Cột kỹ thuật — ID phân biệt các lần chạy generator khác nhau."
+
+  - name: stg_customers
+    description: "Staging layer cho customers — rename/cast từ source staging_raw.customers."
+    columns:
+      - name: customer_unique_id
+        description: "Định danh khách hàng thật, khóa chính."
+        data_tests:
+          - unique
+          - not_null
+      - name: customer_zip_code_prefix
+        description: "Mã bưu chính (rút gọn) của khách hàng."
+      - name: customer_city
+        description: "Thành phố khách hàng."
+      - name: customer_state
+        description: "Bang (state) khách hàng."
+
+  - name: stg_products
+    description: "Staging layer cho products — rename/cast từ source staging_raw.products."
+    columns:
+      - name: product_id
+        description: "Định danh sản phẩm, khóa chính."
+        data_tests:
+          - unique
+          - not_null
+      - name: product_category_name
+        description: "Tên category — tiếng Bồ Đào Nha (theo dataset gốc Olist)."
+      - name: product_category_name_english
+        description: "Tên category tiếng Anh, join từ bảng product_category_name_translation."
+
+  - name: stg_sellers
+    description: "Staging layer cho sellers — rename/cast từ source staging_raw.sellers."
+    columns:
+      - name: seller_id
+        description: "Định danh người bán, khóa chính."
+        data_tests:
+          - unique
+          - not_null
+      - name: seller_zip_code_prefix
+        description: "Mã bưu chính (rút gọn) của seller."
+      - name: seller_city
+        description: "Thành phố seller."
+      - name: seller_state
+        description: "Bang (state) seller."
+
+  - name: stg_order_items
+    description: "Staging layer cho order_items — rename/cast từ source staging_raw.order_items. 1 dòng/sản phẩm trong đơn."
+    columns:
+      - name: order_id
+        description: "FK tới orders."
+        data_tests:
+          - not_null
+      - name: order_item_id
+        description: "Số thứ tự item trong đơn (1, 2...)."
+      - name: product_id
+        description: "FK tới products."
+      - name: seller_id
+        description: "FK tới sellers."
+      - name: price
+        description: "Giá sản phẩm (chưa gồm phí vận chuyển)."
+
+  - name: stg_payments
+    description: "Staging layer cho payments — rename/cast từ source staging_raw.payments."
+    columns:
+      - name: order_id
+        description: "FK tới orders."
+        data_tests:
+          - not_null
+      - name: payment_sequential
+        description: "Thứ tự phương thức thanh toán nếu 1 đơn dùng nhiều hơn 1 (dataset hiện tại luôn = 1)."
+      - name: payment_type
+        description: "Phương thức thanh toán: credit_card/boleto/voucher/debit_card/not_defined."
+      - name: payment_installments
+        description: "Số kỳ trả góp."
+      - name: payment_value
+        description: "Số tiền thanh toán."
+
+  - name: stg_reviews
+    description: "Staging layer cho reviews — rename/cast từ source staging_raw.reviews."
+    columns:
+      - name: review_id
+        description: "Định danh đánh giá, khóa chính."
+        data_tests:
+          - unique
+          - not_null
+      - name: order_id
+        description: "FK tới orders."
+      - name: review_score
+        description: "Điểm đánh giá 1-5."

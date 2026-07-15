@@ -1,0 +1,4 @@
+review_id,order_id,review_score,_generated_at,_generator_run_id
+review-001,order-001,5,2024-01-06 10:00:00,ci-seed-run
+review-002,order-002,4,2024-02-07 10:00:00,ci-seed-run
+review-003,order-003,3,2024-01-21 10:00:00,ci-seed-run

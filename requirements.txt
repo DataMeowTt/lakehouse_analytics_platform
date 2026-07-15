@@ -2,3 +2,6 @@ pandas
 jupyter
 ipykernel
 matplotlib
+neo4j
+dbt-core
+dbt-bigquery

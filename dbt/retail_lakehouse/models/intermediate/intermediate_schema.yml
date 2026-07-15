@@ -1,3 +1,48 @@
 version: 2
 
-models: []
+models:
+  - name: int_orders_joined
+    description: "Join orders + order_items (aggregate) + payments (aggregate) để có full order value — 1 dòng/order."
+    columns:
+      - name: order_id
+        description: "Định danh đơn hàng, khóa chính."
+        data_tests:
+          - unique
+          - not_null
+      - name: customer_unique_id
+        description: "FK tới dim_customer."
+      - name: order_status
+        description: "Trạng thái đơn hàng."
+      - name: order_purchase_timestamp
+        description: "Thời điểm đặt hàng."
+      - name: order_purchase_date
+        description: "Ngày đặt hàng."
+      - name: order_approved_at
+        description: "Thời điểm duyệt thanh toán. Null hợp lệ nếu status = created."
+      - name: order_delivered_carrier_date
+        description: "Thời điểm giao carrier. Null hợp lệ nếu chưa tới bước này."
+      - name: order_delivered_customer_date
+        description: "Thời điểm khách nhận hàng. Null hợp lệ nếu status khác delivered."
+      - name: order_estimated_delivery_date
+        description: "Ngày giao dự kiến."
+      - name: item_count
+        description: "Số dòng item trong đơn (đếm từ order_items)."
+      - name: item_total_value
+        description: "Tổng giá trị sản phẩm trong đơn (sum price từ order_items)."
+      - name: payment_total_value
+        description: "Tổng số tiền đã thanh toán cho đơn (sum payment_value từ payments)."
+
+  - name: int_customer_orders
+    description: "Aggregate theo customer_unique_id — số đơn hàng, tổng chi tiêu, ngày mua gần nhất. Nền cho RFM ở tầng marts."
+    columns:
+      - name: customer_unique_id
+        description: "Định danh khách hàng thật, khóa chính."
+        data_tests:
+          - unique
+          - not_null
+      - name: order_count
+        description: "Số đơn hàng distinct của khách hàng."
+      - name: total_spent
+        description: "Tổng số tiền khách đã chi (sum payment_total_value)."
+      - name: last_purchase_at
+        description: "Thời điểm mua hàng gần nhất — dùng tính Recency trong RFM."

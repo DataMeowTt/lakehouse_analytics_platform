@@ -1,3 +1,42 @@
 version: 2
 
-sources: []
+sources:
+  - name: staging_raw
+    description: "Dataset BigQuery — nơi Silver (Databricks/Delta) được Spark BigQuery connector ghi sang (Bước 5). dbt chỉ đọc, không ghi vào đây."
+    database: lakehouse-analytics
+    schema: staging_raw
+    tables:
+      - name: orders
+        description: "Đơn hàng — bảng lõi."
+        config:
+          loaded_at_field: _generated_at
+          freshness:
+            warn_after: {count: 30, period: day}
+            error_after: {count: 60, period: day}
+      - name: order_items
+        description: "Từng sản phẩm trong đơn hàng."
+        config:
+          loaded_at_field: _generated_at
+          freshness:
+            warn_after: {count: 30, period: day}
+            error_after: {count: 60, period: day}
+      - name: payments
+        description: "Thông tin thanh toán theo đơn hàng."
+        config:
+          loaded_at_field: _generated_at
+          freshness:
+            warn_after: {count: 30, period: day}
+            error_after: {count: 60, period: day}
+      - name: reviews
+        description: "Đánh giá của khách theo đơn hàng."
+        config:
+          loaded_at_field: _generated_at
+          freshness:
+            warn_after: {count: 30, period: day}
+            error_after: {count: 60, period: day}
+      - name: customers
+        description: "Thông tin khách hàng (dimension pool)."
+      - name: products
+        description: "Thông tin sản phẩm (dimension pool)."
+      - name: sellers
+        description: "Thông tin người bán (dimension pool)."

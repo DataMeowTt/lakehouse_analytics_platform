@@ -3,25 +3,15 @@ retail_lakehouse:
   outputs:
     dev:
       type: bigquery
-      method: service-account
+      method: oauth
       project: lakehouse-analytics
-      dataset: <dev-dataset>
-      keyfile: <path-to-sa-dbt-bigquery-key.json>
+      dataset: retail_lakehouse
       threads: 4
-      location: <region>
-    prod:
-      type: bigquery
-      method: service-account
-      project: lakehouse-analytics
-      dataset: <prod-dataset>
-      keyfile: <path-to-sa-dbt-bigquery-key.json>
-      threads: 8
-      location: <region>
+      location: asia-southeast1
     ci:
       type: bigquery
-      method: service-account
+      method: oauth
       project: lakehouse-analytics
-      dataset: <ci-dataset>
-      keyfile: <path-to-sa-dbt-bigquery-key.json>
+      dataset: retail_lakehouse_ci
       threads: 4
-      location: <region>
+      location: asia-southeast1

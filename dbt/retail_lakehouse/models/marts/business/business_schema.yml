@@ -1,3 +1,60 @@
 version: 2
 
-models: []
+models:
+  - name: mart_daily_sales
+    description: "Doanh thu, số đơn, AOV theo từng ngày — nguồn cho Executive Dashboard (Daily Revenue)."
+    columns:
+      - name: order_purchase_date
+        description: "Ngày, khóa chính."
+        data_tests:
+          - unique
+          - not_null
+      - name: total_orders
+        description: "Số đơn hàng distinct trong ngày."
+      - name: gmv
+        description: "Gross Merchandise Value — tổng payment_total_value trong ngày (tính trên mọi order_status, không lọc)."
+      - name: aov
+        description: "Average Order Value = gmv / total_orders."
+
+  - name: mart_monthly_revenue
+    description: "Doanh thu, số đơn, AOV theo từng tháng — nguồn cho Executive Dashboard (Monthly Revenue)."
+    columns:
+      - name: order_purchase_month
+        description: "Tháng (ngày đầu tháng), khóa chính."
+        data_tests:
+          - unique
+          - not_null
+      - name: total_orders
+        description: "Số đơn hàng distinct trong tháng."
+      - name: gmv
+        description: "Gross Merchandise Value trong tháng."
+      - name: aov
+        description: "Average Order Value = gmv / total_orders."
+
+  - name: mart_top_products
+    description: "Doanh thu, số đơn theo từng sản phẩm — nguồn cho Executive/Product Dashboard (Top Products)."
+    columns:
+      - name: product_id
+        description: "Định danh sản phẩm, khóa chính."
+        data_tests:
+          - unique
+          - not_null
+      - name: product_category_name_english
+        description: "Category tiếng Anh của sản phẩm."
+      - name: order_count
+        description: "Số đơn hàng distinct có chứa sản phẩm này."
+      - name: total_revenue
+        description: "Tổng doanh thu từ sản phẩm (sum price từ order_items)."
+
+  - name: mart_sales_by_region
+    description: "Doanh thu, số đơn theo bang (customer_state) — phân tích địa lý."
+    columns:
+      - name: customer_state
+        description: "Bang của khách hàng, khóa chính."
+        data_tests:
+          - unique
+          - not_null
+      - name: total_orders
+        description: "Số đơn hàng distinct trong bang."
+      - name: gmv
+        description: "Gross Merchandise Value trong bang."

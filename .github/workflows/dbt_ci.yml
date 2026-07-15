@@ -2,10 +2,45 @@ name: dbt CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
-  placeholder:
+  dbt-build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
-      - run: echo "dbt CI not implemented yet"
+      - uses: actions/checkout@v4
+
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_SA_EMAIL }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - run: pip install dbt-core dbt-bigquery
+
+      - name: Configure dbt profile
+        run: |
+          mkdir -p ~/.dbt
+          cat > ~/.dbt/profiles.yml << EOF
+          retail_lakehouse:
+            target: ci
+            outputs:
+              ci:
+                type: bigquery
+                method: oauth
+                project: lakehouse-analytics
+                dataset: retail_lakehouse_ci
+                threads: 4
+                location: asia-southeast1
+          EOF
+
+      - name: dbt build (seed -> run -> test -> snapshot, dataset nhỏ)
+        working-directory: dbt/retail_lakehouse
+        run: dbt build --target ci

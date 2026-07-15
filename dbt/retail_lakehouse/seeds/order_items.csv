@@ -1,0 +1,4 @@
+order_id,order_item_id,product_id,seller_id,price,_generated_at,_generator_run_id
+order-001,1,prod-001,seller-001,100.00,2024-01-01 10:00:00,ci-seed-run
+order-002,1,prod-002,seller-002,50.00,2024-02-01 11:00:00,ci-seed-run
+order-003,1,prod-001,seller-001,100.00,2024-01-15 09:00:00,ci-seed-run
