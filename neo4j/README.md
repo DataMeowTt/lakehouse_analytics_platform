@@ -70,16 +70,16 @@ Expected output: `Loaded 500 products, <N> co-purchase relationships`.
 
 ## Step 3 — Explore the graph
 
-Open the Neo4j Aura **Query** tab and run the queries in `sql/` **in order** — paste
+Open the Neo4j Aura **Query** tab and run the queries in `cypher/` **in order** — paste
 each file's contents into the query editor:
 
 | File | What it shows |
 |---|---|
-| `sql/01_top_copurchase_pairs.sql` | The strongest product pairs — highest co-purchase count |
-| `sql/02_same_vs_different_category.sql` | Whether co-purchases happen mostly within one category or across categories — signals whether cross-category cross-sell is worth pursuing |
-| `sql/03_most_connected_products.sql` | "Hub" products connected to many others — good candidates for a "Frequently bought with..." widget |
-| `sql/04_isolated_bestsellers.sql` | Best-sellers with zero co-purchase connections — products bought standalone, no accessory demand |
-| `sql/05_visualize_full_graph.sql` | Renders the whole graph at once (small enough with only ~500 nodes) — look for disconnected clusters |
+| `cypher/01_top_copurchase_pairs.cypher` | The strongest product pairs — highest co-purchase count |
+| `cypher/02_same_vs_different_category.cypher` | Whether co-purchases happen mostly within one category or across categories — signals whether cross-category cross-sell is worth pursuing |
+| `cypher/03_most_connected_products.cypher` | "Hub" products connected to many others — good candidates for a "Frequently bought with..." widget |
+| `cypher/04_isolated_bestsellers.cypher` | Best-sellers with zero co-purchase connections — products bought standalone, no accessory demand |
+| `cypher/05_visualize_full_graph.cypher` | Renders the whole graph at once (small enough with only ~500 nodes) — look for disconnected clusters |
 
 By default, node captions show the `category` property (multiple distinct products
 share the same category, so several nodes will show identical text — that's expected,
